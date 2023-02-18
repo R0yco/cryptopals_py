@@ -1,4 +1,3 @@
-from collections import Counter
 PRINTABLE_RANGE = list(range(32,128))
 UPPERCASE_RANGE = range(65, 91)
 LOWERCASE_RANGE = range(97, 123)
