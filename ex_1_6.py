@@ -6,15 +6,23 @@ import itertools
 def main():
     dis = hamming_distance(b"this is a test",b"wokka wokka!!!")
     print(dis)
-    guess_best_blocksize(b'aaabbbccc')
+    print(guess_best_blocksize(b'aaabbbccc'))
 
 def guess_best_blocksize(ciphertext: bytes)-> int:
     max_blocksize = int(math.floor(len(ciphertext) / 2))
+    lowest_avg = 9999.9
+    lowest_blocksize = 1
     for bs in range(2, max_blocksize):
+        avg_pair_dist = 0.0
         trimmed_ciphertext = ciphertext[0: len(ciphertext) - len(ciphertext) % bs]
         blocks = split_to_blocks(trimmed_ciphertext, bs)
-        block_combinations = itertools.combinations(blocks, 2)
-    return 1
+        block_pairs = list(itertools.combinations(blocks, 2))
+        avg_pair_dist = sum([hamming_distance(pair[0],pair[1]) for pair in block_pairs]) / len(block_pairs)
+
+        if avg_pair_dist < lowest_avg:
+             lowest_avg = avg_pair_dist
+             lowest_blocksize = bs
+    return lowest_blocksize 
 
 def split_to_blocks(blob: bytes, blocksize: int) -> Iterable:
     for i in range(0, len(blob), blocksize):
