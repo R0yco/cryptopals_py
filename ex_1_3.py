@@ -1,4 +1,4 @@
-PRINTABLE_RANGE = list(range(32,128))
+PRINTABLE_RANGE = list(range(32,128)) + [ord("\n")]
 UPPERCASE_RANGE = range(65, 91)
 LOWERCASE_RANGE = range(97, 123)
 ENGLISH_LETTER_FREQUENCIES = {
@@ -20,6 +20,7 @@ ENGLISH_LETTER_FREQUENCIES = {
 def break_single_byte_xor_cipher(ciphertext: bytes):
     # iterate over possible xor-keys
     best_key = find_best_key(ciphertext)
+    print(f"[+] the most probable xor key is {best_key}")
     plaintext = bytes([b ^ best_key for b in ciphertext])
     return plaintext
 
@@ -51,10 +52,10 @@ def devise_score(possible_plaintext: bytes) -> int:
 
     space_ratio = calculate_space_ratio(possible_plaintext)
     if space_ratio > 0.05:
-        score += 20
+        score += 100
 
     lower_to_upper_ratio = calculate_lower_to_upper_ratio(possible_plaintext)
-    if lower_to_upper_ratio > 2:
+    if lower_to_upper_ratio > 3:
         score += 50
     score += calculate_unprobable_char_score(possible_plaintext)
     return score
@@ -86,23 +87,8 @@ def calculate_space_ratio(possible_plaintext: bytes) -> float:
 def single_letter_frequency_check(possible_plaintext: bytes) -> int:
     score = 0
     for byte in possible_plaintext:
-        score += round(ENGLISH_LETTER_FREQUENCIES.get(chr(byte).upper(),0))
-    # frequency_score = 0
-    # possible_plaintext_lowercase_only = [a for a in bytes(str(possible_plaintext, 'ascii').lower(), 'ascii') if a in LOWERCASE_RANGE]
-    # ideal_letter_freq_array = list({ord(k.lower()): v for k, v in sorted(ENGLISH_LETTER_FREQUENCIES.items(), key=lambda item: item[1], reverse=True)}.keys())
-    # letter_freq = {letter: 100* count / len(possible_plaintext_lowercase_only) for letter, count in Counter(possible_plaintext_lowercase_only).items()}
-    # letter_freq_array = list({k: v for k, v in sorted(letter_freq.items(), key=lambda item: item[1], reverse=True)}.keys())
-    # for letter in range(0,26):
-    #     try:
-    #         index_of_letter = letter_freq_array.index(letter+97)
-    #     except ValueError:
-    #         index_of_letter = -1
-    #     ideal_index_of_letter = ideal_letter_freq_array.index(letter+97)
-    #     if index_of_letter == -1 and ideal_index_of_letter <=5:
-    #         frequency_score -= 9 # the suspected plain doesn't have a common letter in it
-    #     elif abs(index_of_letter - ideal_index_of_letter) < 10:
-    #         frequency_score += 5 # frequencies kinda make sense
-    # 
+        score += 5*round(ENGLISH_LETTER_FREQUENCIES.get(chr(byte).upper(),0))
+    
     return score
 
 def calculate_lower_to_upper_ratio(possible_plaintext: bytes) -> float:
