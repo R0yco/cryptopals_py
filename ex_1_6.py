@@ -12,18 +12,14 @@ def main():
     print(f"[+] the guessed blocksize is {blocksize}")
     transposed_cipherblocks = get_transposed_blocks(ciphertext, blocksize)
     transposed_plainblocks = [break_single_byte_xor_cipher(transposed_cipherblocks[i]) for i in range(len(transposed_cipherblocks))]
-    # print(get_transposed_blocks(b''.join(transposed_plainblocks), 1))
     print(merge_plaintext(transposed_plainblocks))
 
 
 def merge_plaintext(plaintext_blocks: bytes)-> bytes:
     plaintext = b""
     index = 0
-    #combined_size = sum([len(plaintext_blocks[i]) for i in range(len(plaintext_blocks))])
-    #print(combined_size)
     for i in range(len(plaintext_blocks[0])):
         for j in range(len(plaintext_blocks)):
-            print(j,i)
             try:
                 plaintext += chr(plaintext_blocks[j][i]).encode('ascii')
             except:
@@ -32,7 +28,6 @@ def merge_plaintext(plaintext_blocks: bytes)-> bytes:
     return plaintext
 
 def guess_best_blocksize(ciphertext: bytes)-> int:
-    #max_blocksize = int(math.floor(len(ciphertext) / 2))
     max_blocksize = 40
     blocksize_scores = dict()
     for bs in range(3, max_blocksize):
